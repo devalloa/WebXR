@@ -1,8 +1,9 @@
 // Vie quotidienne des sims : selon l'heure de jeu, chacun dort chez lui, va travailler,
 // flâne sur la place, puis rentre. Les trajets suivent les rues (src/sim/streets.ts) ;
-// à l'intérieur d'un bâtiment, le sim est caché. Aucune allocation par image.
+// à l'intérieur d'un bâtiment, le sim est caché. L'avatar est animé (clips `idle` / `walk`
+// de l'asset `sim-avatar`, fondu enchaîné). Aucune allocation par image.
 
-import { Color, createSystem, Mesh, MeshStandardMaterial, Vector3, type Entity } from '@iwsdk/core';
+import { AnimationMixer, AssetManager, Color, createSystem, Mesh, MeshStandardMaterial, Vector3, type AnimationAction, type Entity } from '@iwsdk/core';
 import type { Signal } from '@preact/signals-core';
 import { scheduleFor, type Place } from '@sim/schedule';
 import { pathLength, pointAlong, routeTo, type Point2, type StreetGrid } from '@sim/streets';
@@ -16,12 +17,20 @@ const GRID: StreetGrid = { xs: [-PITCH * 1.5, -PITCH / 2, PITCH / 2, PITCH * 1.5
 const LOOP: Point2[] = [...WALK_LOOP, WALK_LOOP[0]!];
 const LOOP_LENGTH = pathLength(LOOP);
 
+/** Vitesse de marche « naturelle » du clip `walk` (m/s) : timeScale = vitesse / WALK_CLIP_SPEED. */
+const WALK_CLIP_SPEED = 1.19;
+const FADE_SECONDS = 0.25;
+
 interface Journey {
   place: Place;
   path: Point2[];
   length: number;
   distance: number;
   arrived: boolean;
+  mixer?: AnimationMixer;
+  idle?: AnimationAction;
+  walk?: AnimationAction;
+  walking: boolean;
 }
 
 export class SimWalkSystem extends createSystem({
@@ -45,8 +54,9 @@ export class SimWalkSystem extends createSystem({
     const tint = entity.getVectorView(Sim, 'tint');
     this.tint.setRGB(tint[0]!, tint[1]!, tint[2]!);
     entity.object3D?.traverse((obj) => {
-      const isOutfit = obj.name === 'Body' || obj.name === 'Outfit';
-      if (obj instanceof Mesh && isOutfit && obj.material instanceof MeshStandardMaterial) {
+      if (!(obj instanceof Mesh) || !(obj.material instanceof MeshStandardMaterial)) return;
+      // Avatar : matériau « Outfit » ; silhouette de secours : maillage « Body ».
+      if (obj.material.name === 'Outfit' || obj.name === 'Body') {
         const own = obj.material.clone(); // une copie par sim : le matériau du prototype reste partagé
         own.color.copy(this.tint);
         obj.material = own;
@@ -55,8 +65,35 @@ export class SimWalkSystem extends createSystem({
     const hour = (this.globals.gameHour as Signal<number> | undefined)?.peek() ?? 8;
     const place = scheduleFor(entity.getValue(Sim, 'simId') ?? '', hour).place;
     const start = this.targetFor(entity, place);
-    this.journeys.set(entity, { place, path: [start, start], length: 0, distance: 0, arrived: true });
+    const journey: Journey = { place, path: [start, start], length: 0, distance: 0, arrived: true, walking: false };
+
+    // Animation : les clips sont partagés (asset en cache), le mixer est propre à ce sim.
+    const gltf = AssetManager.getGLTF('sim-avatar', { shared: true });
+    const idleClip = gltf?.animations.find((c) => c.name === 'idle');
+    const walkClip = gltf?.animations.find((c) => c.name === 'walk');
+    if (entity.object3D && idleClip && walkClip) {
+      journey.mixer = new AnimationMixer(entity.object3D);
+      journey.idle = journey.mixer.clipAction(idleClip);
+      journey.walk = journey.mixer.clipAction(walkClip);
+      journey.walk.timeScale = (entity.getValue(Sim, 'speed') ?? 1.2) / WALK_CLIP_SPEED;
+      journey.idle.play();
+      journey.walk.play();
+      journey.walk.setEffectiveWeight(0);
+      journey.mixer.setTime(Math.random() * 2); // désynchronise les six sims
+    }
+    this.journeys.set(entity, journey);
     this.applyPose(entity, start.x, start.z, 0, 1);
+  }
+
+  /** Bascule marche/repos par fondu enchaîné (sans à-coup). */
+  private setWalking(journey: Journey, walking: boolean): void {
+    if (journey.walking === walking || !journey.idle || !journey.walk) return;
+    journey.walking = walking;
+    const from = walking ? journey.idle : journey.walk;
+    const to = walking ? journey.walk : journey.idle;
+    to.enabled = true;
+    to.setEffectiveWeight(1);
+    from.crossFadeTo(to, FADE_SECONDS, false);
   }
 
   private targetFor(entity: Entity, place: Place): Point2 {
@@ -90,17 +127,21 @@ export class SimWalkSystem extends createSystem({
         if (entity.object3D) entity.object3D.visible = true;
       }
 
+      journey.mixer?.update(delta);
       if (!journey.arrived) {
+        this.setWalking(journey, true);
         journey.distance = Math.min(journey.length, journey.distance + speed * delta);
         const p = pointAlong(journey.path, journey.distance);
         this.applyPose(entity, p.x, p.z, p.dx, p.dz);
         if (journey.distance >= journey.length) {
           journey.arrived = true;
+          this.setWalking(journey, false);
           // Chez soi ou au travail : le sim entre dans le bâtiment (caché jusqu'au prochain créneau).
           if (place !== 'plaza' && entity.object3D) entity.object3D.visible = false;
         }
       } else if (place === 'plaza') {
         // Flânerie : tour de la place en boucle.
+        this.setWalking(journey, true);
         entity.setValue(Sim, '_distance', ((entity.getValue(Sim, '_distance') ?? 0) + speed * delta) % LOOP_LENGTH);
         const p = pointAlong(LOOP, entity.getValue(Sim, '_distance') ?? 0);
         journey.path = [{ x: p.x, z: p.z }, { x: p.x, z: p.z }];

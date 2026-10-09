@@ -78,7 +78,7 @@ const sims = [
   ['theo', 'Théo', 1.5, 75, [0.95, 0.55, 0.2, 1], [0, 11]],
 ];
 for (const [simId, name, speed, startOffset, tint, pos] of sims) {
-  nodes.push({ id: `sim-${simId}`, name, content: { type: 'asset', asset: 'sim-figure', castShadow: true, receiveShadow: false },
+  nodes.push({ id: `sim-${simId}`, name, content: { type: 'asset', asset: 'sim-avatar', castShadow: true, receiveShadow: false },
     transform: { position: [pos[0], 0, pos[1]] }, components: { Sim: { simId, speed, startOffset, tint } } });
 }
 

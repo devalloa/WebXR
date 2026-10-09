@@ -44,7 +44,8 @@ npm run typecheck && npm run build     # vérifications
 npm run dev                            # serveur de dev + navigateur piloté (émulateur Quest 3)
 ```
 
-- `app/src/scene-assets/` : sol de la ville (`city-ground`) et silhouette de sim (`sim-figure`) ; les bâtiments viennent du kit Blender (`app/public/gltf/city-kit/`, généré par `tools/blender/city_kit.py`).
+- `app/src/scene-assets/` : sol de la ville (`city-ground`) et silhouette de secours (`sim-figure`) ; les bâtiments viennent du kit Blender (`app/public/gltf/city-kit/`, généré par `tools/blender/city_kit.py`) ; les sims utilisent l'avatar animé `app/public/gltf/avatars/sim.glb` (Quaternius, CC0, clips `idle`/`walk`).
+- `app/src/city-dressing.ts` : `CityDressingSystem`, applique les textures tuilables CC0 (`app/public/textures/city/`) au sol, aux trottoirs et à la pelouse.
 - `app/tools/gen-scene.mjs` : génère la scène JSON (placement des immeubles, lampadaires, mobilier, sims) ; relancer après tout changement de plan.
 - `app/src/city-layout.ts` : plan de la ville (données pures, boucle de promenade `WALK_LOOP`).
 - `app/src/sim-walk.ts` : `SimWalkSystem`, vie quotidienne des six sims : routine horaire (`src/sim/schedule.ts`), trajets par les rues (`src/sim/streets.ts`), logement et lieu de travail (`app/src/city-places.ts`, généré), flânerie sur la place.

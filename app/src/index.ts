@@ -2,6 +2,7 @@ import { World } from '@iwsdk/core';
 import projectOptions from 'virtual:iwsdk-project';
 import type { Signal } from '@preact/signals-core';
 import { createWorld } from '@sim/relations';
+import { CityDressingSystem } from './city-dressing.js';
 import { GameClockSystem } from './game-clock.js';
 import { SimWalkSystem } from './sim-walk.js';
 
@@ -17,6 +18,7 @@ World.create(
 
   world.registerSystem(GameClockSystem);
   world.registerSystem(SimWalkSystem);
+  world.registerSystem(CityDressingSystem);
 
   // Réglages de test par l'URL : ?hour=22 (heure de départ), ?speed=6 (heures de jeu par minute).
   const params = new URLSearchParams(location.search);

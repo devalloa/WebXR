@@ -95,7 +95,7 @@ export class GameClockSystem extends createSystem(
     // Soleil : lever à 6 h, zénith à 12 h, coucher à 18 h.
     const angle = ((hour - 6) / 24) * Math.PI * 2;
     const elevation = Math.sin(angle); // -1 (minuit) … 1 (midi)
-    const k = Math.max(0, Math.min(1, elevation * 1.4 + 0.3)); // 0 nuit … 1 jour
+    const k = Math.max(0, Math.min(1, elevation * 1.6 + 0.45)); // 0 nuit … 1 jour (crépuscule encore lisible)
 
     // Le soleil et sa cible suivent le joueur : la zone d'ombre reste autour de lui.
     this.player.getWorldPosition(this.playerPosition);
