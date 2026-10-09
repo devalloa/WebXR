@@ -1,0 +1,10 @@
+# Secrets : jamais versionnés
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+
+# Sorties téléchargées des sessions Managed Agents
+agent-outputs/

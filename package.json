@@ -1,0 +1,12 @@
+{
+  "name": "webxr-sims",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "agent:session": "node --env-file=.env scripts/agents/run-session.mjs"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.132.1"
+  }
+}

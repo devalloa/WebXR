@@ -1,0 +1,8 @@
+# Bac à sable cloud partagé par tous les agents du projet.
+# Réseau limité : seuls les gestionnaires de paquets (npm, pip...) sont joignables.
+name: webxr-cloud
+config:
+  type: cloud
+  networking:
+    type: limited
+    allow_package_managers: true
