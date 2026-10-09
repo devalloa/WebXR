@@ -8,3 +8,5 @@ node_modules/
 
 # Sorties téléchargées des sessions Managed Agents
 agent-outputs/
+__pycache__/
+*.pyc
