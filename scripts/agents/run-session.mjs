@@ -40,6 +40,8 @@ const DESCRIPTION =
   "Écrire le module TypeScript `relations.ts` (relations entre six sims : création du monde, " +
     "événements qui font évoluer un score par paire, dérive lente vers zéro), ses tests Vitest " +
     "et un court README, dans /mnt/session/outputs/.";
+// Fichiers du dépôt à fournir à l'agent en lecture seule, montés sous /mnt/inputs/<nom>.
+const INPUT_FILES = (process.env.WEBXR_INPUT_FILES ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 
 // Tarif liste de claude-sonnet-5-5 ($ / million de tokens), pour l'estimation locale.
 // Le chiffre faisant foi est `list_cost`, calculé par la plateforme.
@@ -83,12 +85,21 @@ async function main() {
   console.log(`Durée max    : ${WALL_CLOCK_MINUTES} min (interruption côté client)`);
   console.log(`Itérations   : ${MAX_ITERATIONS} max (évaluateur → agent)\n`);
 
+  // 0. Ressources : fichiers du dépôt téléversés (Files API) puis montés en lecture seule.
+  const resources = [];
+  for (const file of INPUT_FILES) {
+    const uploaded = await client.beta.files.upload({ file: fs.createReadStream(file) });
+    resources.push({ type: "file", file_id: uploaded.id, mount_path: `/mnt/inputs/${path.basename(file)}` });
+    console.log(`Ressource     : ${file} → /mnt/inputs/${path.basename(file)} (${uploaded.id})`);
+  }
+
   // 1. La session : une instance de l'agent dans l'environnement, avec son plafond.
   const session = await client.beta.sessions.create({
     agent: { type: "agent", id: AGENT_ID },
     environment_id: ENV_ID,
-    title: `relations.ts — ${new Date().toISOString().slice(0, 16)}`,
+    title: `${path.basename(RUBRIC_PATH, ".md")} — ${new Date().toISOString().slice(0, 16)}`,
     budget: { type: "limit", max_list_cost: { amount: String(BUDGET_CENTS), currency: "USD" } },
+    ...(resources.length ? { resources } : {}),
   });
   console.log(`Session      : ${session.id}`);
   console.log(`Suivi en direct : https://platform.claude.com/workspaces/${WORKSPACE}/sessions/${session.id}\n`);
@@ -102,7 +113,8 @@ async function main() {
     events: [
       {
         type: "user.define_outcome",
-        description: DESCRIPTION,
+        // La grille est jointe à la description : l'agent voit exactement ce que l'évaluateur notera.
+        description: `${DESCRIPTION}\n\nGrille d'évaluation (celle de l'évaluateur) :\n\n${rubric}`,
         rubric: { type: "text", content: rubric },
         max_iterations: MAX_ITERATIONS,
       },
