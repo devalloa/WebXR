@@ -3,107 +3,61 @@
   "units": "meters",
   "components": {
     "com.iwsdk.components.DomeGradient": {
-      "sky": [0.2423, 0.6172, 0.8308, 1],
-      "equator": [0.6584, 0.7084, 0.7913, 1],
-      "ground": [0.807, 0.7758, 0.7454, 1],
+      "sky": [0.24, 0.62, 0.83, 1],
+      "equator": [0.66, 0.71, 0.79, 1],
+      "ground": [0.8, 0.78, 0.75, 1],
       "intensity": 1
     },
     "com.iwsdk.components.IBLGradient": {
-      "sky": [0.6902, 0.749, 0.7843, 1],
-      "equator": [0.6584, 0.7084, 0.7913, 1],
-      "ground": [0.807, 0.7758, 0.7454, 1],
+      "sky": [0.69, 0.75, 0.78, 1],
+      "equator": [0.66, 0.71, 0.79, 1],
+      "ground": [0.8, 0.78, 0.75, 1],
       "intensity": 1
     }
   },
   "resources": {},
+  "authoring": {
+    "views": [
+      {
+        "id": "hero", "role": "hero", "projection": "perspective",
+        "position": [18, 14, 26], "target": [0, 2, -4], "fov": 50
+      },
+      {
+        "id": "street", "role": "diagnostic", "projection": "perspective",
+        "position": [0, 1.6, 2], "target": [-11, 1.4, -11], "fov": 70
+      }
+    ]
+  },
   "nodes": [
     {
-      "id": "environment",
-      "name": "Environment",
-      "content": {
-        "type": "asset",
-        "asset": "environment-desk"
-      },
-      "transform": {
-        "position": [0, -0.106921583, 0],
-        "rotationDeg": [0, 180, 0]
-      },
-      "components": {
-        "LocomotionEnvironment": {}
-      }
+      "id": "city", "name": "Ville",
+      "content": { "type": "asset", "asset": "city-block" },
+      "transform": { "position": [0, 0, 0] },
+      "components": { "LocomotionEnvironment": {} }
     },
     {
-      "id": "plant-sansevieria",
-      "name": "Plant Sansevieria",
-      "content": {
-        "type": "asset",
-        "asset": "plant-sansevieria"
-      },
-      "transform": {
-        "position": [1.2, 0.85, -1.8]
-      },
-      "components": {
-        "RayInteractable": {},
-        "DistanceGrabbable": {
-          "movementMode": "MoveFromTarget"
-        }
-      }
+      "id": "fill", "name": "Lumière d'ambiance",
+      "components": { "com.iwsdk.components.HemisphereLight": {
+        "skyColor": [0.7, 0.8, 1, 1], "groundColor": [0.35, 0.3, 0.25, 1], "intensity": 0.6
+      } }
     },
-    {
-      "id": "robot",
-      "name": "Robot",
-      "content": {
-        "type": "asset",
-        "asset": "robot"
-      },
-      "transform": {
-        "position": [-1.2, 0.95, -1.8],
-        "scale": 0.5
-      },
-      "components": {
-        "AudioSource": {
-          "src": "./audio/chime.mp3",
-          "maxInstances": 3,
-          "playbackMode": "fade-restart"
-        },
-        "RayInteractable": {},
-        "Robot": {}
-      }
-    },
-    {
-      "id": "welcome-panel",
-      "name": "Welcome Panel",
-      "content": {
-        "type": "asset",
-        "asset": "welcome-panel"
-      },
-      "transform": {
-        "position": [0, 1.6, -2],
-        "scale": 0.4
-      },
-      "components": {
-        "RayInteractable": {},
-        "ScreenSpace": {
-          "top": "20px",
-          "left": "20px",
-          "width": "25vw",
-          "height": "40%"
-        }
-      }
-    },
-    {
-      "id": "webxr-banner",
-      "name": "WebXR Banner",
-      "content": {
-        "type": "asset",
-        "asset": "webxr-banner"
-      },
-      "transform": {
-        "position": [0, 1, 1.8],
-        "rotationDeg": [0, 180, 0],
-        "scale": [1, -1, 1]
-      },
-      "components": {}
-    }
+    { "id": "sim-lea", "name": "Léa", "content": { "type": "asset", "asset": "sim-figure" },
+      "transform": { "position": [-11, 0.15, -11] },
+      "components": { "Sim": { "simId": "lea", "speed": 1.2, "startOffset": 0, "tint": [0.85, 0.3, 0.3, 1] } } },
+    { "id": "sim-noah", "name": "Noah", "content": { "type": "asset", "asset": "sim-figure" },
+      "transform": { "position": [0, 0.15, -11] },
+      "components": { "Sim": { "simId": "noah", "speed": 1.4, "startOffset": 15, "tint": [0.3, 0.45, 0.85, 1] } } },
+    { "id": "sim-ines", "name": "Inès", "content": { "type": "asset", "asset": "sim-figure" },
+      "transform": { "position": [11, 0.15, -11] },
+      "components": { "Sim": { "simId": "ines", "speed": 1.1, "startOffset": 30, "tint": [0.9, 0.75, 0.25, 1] } } },
+    { "id": "sim-malik", "name": "Malik", "content": { "type": "asset", "asset": "sim-figure" },
+      "transform": { "position": [11, 0.15, 0] },
+      "components": { "Sim": { "simId": "malik", "speed": 1.3, "startOffset": 45, "tint": [0.3, 0.7, 0.4, 1] } } },
+    { "id": "sim-sofia", "name": "Sofia", "content": { "type": "asset", "asset": "sim-figure" },
+      "transform": { "position": [11, 0.15, 11] },
+      "components": { "Sim": { "simId": "sofia", "speed": 1.0, "startOffset": 60, "tint": [0.75, 0.4, 0.8, 1] } } },
+    { "id": "sim-theo", "name": "Théo", "content": { "type": "asset", "asset": "sim-figure" },
+      "transform": { "position": [0, 0.15, 11] },
+      "components": { "Sim": { "simId": "theo", "speed": 1.5, "startOffset": 75, "tint": [0.95, 0.55, 0.2, 1] } } }
   ]
 }

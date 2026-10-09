@@ -7,10 +7,13 @@
 
 import { iwsdkDev } from '@iwsdk/vite-plugin-dev';
 import { defineConfig } from 'vite';
+import { fileURLToPath } from 'node:url';
+
+const simDir = fileURLToPath(new URL('../src/sim', import.meta.url));
 
 export default defineConfig({
   plugins: [iwsdkDev()],
-  server: { host: '0.0.0.0', port: 8081, open: false },
+  server: { host: '0.0.0.0', port: 8081, open: false, fs: { allow: ['..'] } },
   build: {
     outDir: 'dist',
     sourcemap: process.env.NODE_ENV !== 'production',
@@ -22,6 +25,8 @@ export default defineConfig({
   // (three@0.185 vs app super-three@0.181). Duplicate Component classes break
   // instanceof checks → "Only pmndrs/uikit components can be added as children".
   resolve: {
+    // Modules de logique pure partagés avec les tests du dépôt (src/sim).
+    alias: { '@sim': simDir },
     dedupe: [
       'three',
       '@pmndrs/uikit',

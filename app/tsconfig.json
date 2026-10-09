@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "strict": true,
@@ -9,7 +9,26 @@
     "isolatedModules": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "types": ["@iwsdk/vite-plugin-dev/client"]
+    "types": [
+      "@iwsdk/vite-plugin-dev/client"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@sim/*": [
+        "../src/sim/*"
+      ]
+    },
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ]
   },
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "../src/sim/*.ts"
+  ],
+  "exclude": [
+    "../src/sim/*.test.ts"
+  ]
 }

@@ -1,19 +1,19 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 import { World } from '@iwsdk/core';
 import projectOptions from 'virtual:iwsdk-project';
-import { PanelSystem } from './panel.js';
-import { RobotSystem } from './robot.js';
+import { createWorld } from '@sim/relations';
+import { GameClockSystem } from './game-clock.js';
+import { SimWalkSystem } from './sim-walk.js';
+
+/** Les six sims actifs ; les mêmes identifiants que dans la scène (composant Sim). */
+export const SIM_IDS = ['lea', 'noah', 'ines', 'malik', 'sofia', 'theo'] as const;
 
 World.create(
   document.getElementById('scene-container') as HTMLDivElement,
   projectOptions,
 ).then((world) => {
-  world.registerSystem(RobotSystem);
-  world.registerSystem(PanelSystem);
+  // État de simulation partagé entre systèmes (logique pure de src/sim).
+  world.globals.relations = createWorld([...SIM_IDS]);
+
+  world.registerSystem(GameClockSystem);
+  world.registerSystem(SimWalkSystem);
 });

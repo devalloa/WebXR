@@ -35,3 +35,20 @@ coût (`list_cost`) et télécharge les sorties dans `agent-outputs/<session_id>
 
 Variables utiles dans `.env` : `WEBXR_SESSION_BUDGET_CENTS` (défaut 100 = 1 $),
 `WEBXR_MAX_ITERATIONS` (défaut 2), `WEBXR_WALL_CLOCK_MINUTES` (défaut 15).
+
+## Le jeu (`app/`, IWSDK 1.0 + Three.js + Vite)
+
+```sh
+cd app && npm install
+npm run typecheck && npm run build     # vérifications
+npm run dev                            # serveur de dev + navigateur piloté (émulateur Quest 3)
+```
+
+- `app/src/scene-assets/` : ville procédurale (`city-block`) et silhouette de sim (`sim-figure`), InstancedMesh et matériaux partagés.
+- `app/src/city-layout.ts` : plan de la ville (données pures, boucle de promenade `WALK_LOOP`).
+- `app/src/sim-walk.ts` : `SimWalkSystem`, déplace et oriente les six sims (composant `Sim`).
+- `app/src/game-clock.ts` : `GameClockSystem`, heure de jeu (`globals.gameHour`), soleil, ciel, et `tick()` des relations.
+- `app/public/scenes/main.iwsdk.scene.json` : composition (ville, lumière, six sims avec `simId`, `speed`, `tint`).
+- L'alias `@sim/*` pointe vers `src/sim/` (logique pure partagée avec les tests Vitest).
+
+Sur Quest 3 : `npm run dev` affiche une URL réseau (`https://<ip>:8081`) à ouvrir dans le navigateur du casque, sur le même Wi-Fi.
