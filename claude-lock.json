@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "origin": {
+    "base_url": "https://api.anthropic.com",
+    "organization_id": "eeed9494-56e3-4034-a0e2-cab968787b4f",
+    "workspace_id": "wrkspc_0186qb1ZbZS7Z52Bb7vKvL1N"
+  },
+  "resources": {
+    "./agents/webxr-game-systems.md": {
+      "kind": "agent",
+      "id": "agent_01N5CvVxKVnsKLtD9wMVtjkU",
+      "version": "1",
+      "hash": "475e9bae62c5d47275df8c6f02c485b8",
+      "remote_hash": "ce781575cf4a78fa85d66a6e2794e07f"
+    },
+    "./environments/cloud.yaml": {
+      "kind": "environment",
+      "id": "env_01XmqyeYhz8cvN3VxapHqxLV",
+      "hash": "dfcc036967ddd5db9b1807a8c5483f0a",
+      "remote_hash": "a3d99f7d8d435795f3268d896811a6b7"
+    }
+  }
+}
