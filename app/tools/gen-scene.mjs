@@ -20,9 +20,16 @@ const faceCenter = (x, z) => (Math.atan2(-x, -z) * 180) / Math.PI;
 const nodes = [
   { id: 'ground', name: 'Sol', content: { type: 'asset', asset: 'city-ground', castShadow: false, receiveShadow: true },
     transform: { position: [0, 0, 0] }, components: { LocomotionEnvironment: {} } },
-  { id: 'fill', name: "Lumière d'ambiance", components: { 'com.iwsdk.components.HemisphereLight': {
-    skyColor: [0.7, 0.8, 1, 1], groundColor: [0.35, 0.3, 0.25, 1], intensity: 0.6 } } },
 ];
+// Lumière d'ambiance et soleil : créés par GameClockSystem (ils varient avec l'heure).
+
+/** Emprises au sol du kit (x, z) ; la porte est au centre de la face avant (+Z local). */
+const FOOTPRINT = { 'building-a': [6, 6], 'building-b': [6, 8], 'building-c': [8, 6], 'tower-d': [7, 7] };
+const placed = []; // { id, asset, x, z, rotY } pour attribuer logements et lieux de travail
+const building = (id, name, asset, pos, rotY) => {
+  placed.push({ id, asset, x: pos[0], z: pos[1], rotY });
+  return node(id, name, asset, pos, rotY, wall);
+};
 
 // Îlots : grille 3x3 sans le centre ; composition selon l'index.
 const blocks = [];
@@ -33,21 +40,21 @@ blocks.forEach((b, i) => {
   const P = (dx, dz) => [b.x + dx, b.z + dz];
   switch (i % 4) {
     case 0:
-      nodes.push(node(`blk${i}-a1`, 'Immeuble A', 'building-a', P(-3, -3), rot, wall));
-      nodes.push(node(`blk${i}-a2`, 'Immeuble A', 'building-a', P(3, 3), rot, wall));
+      nodes.push(building(`blk${i}-a1`, 'Immeuble A', 'building-a', P(-3, -3), rot));
+      nodes.push(building(`blk${i}-a2`, 'Immeuble A', 'building-a', P(3, 3), rot));
       nodes.push(node(`blk${i}-tree`, 'Arbre', 'tree', P(3, -3)));
       break;
     case 1:
-      nodes.push(node(`blk${i}-b`, 'Immeuble B', 'building-b', P(-3, 0), rot, wall));
-      nodes.push(node(`blk${i}-a`, 'Immeuble A', 'building-a', P(3.3, 2), rot, wall)); // 30 cm d'écart avec B : pas de z-fighting
+      nodes.push(building(`blk${i}-b`, 'Immeuble B', 'building-b', P(-3, 0), rot));
+      nodes.push(building(`blk${i}-a`, 'Immeuble A', 'building-a', P(3.3, 2), rot)); // 30 cm d'écart avec B
       nodes.push(node(`blk${i}-tree`, 'Arbre', 'tree', P(3, -3.5)));
       break;
     case 2:
-      nodes.push(node(`blk${i}-c`, 'Immeuble C', 'building-c', P(0, -3), rot, wall));
-      nodes.push(node(`blk${i}-a`, 'Immeuble A', 'building-a', P(0, 3.3), rot, wall)); // 30 cm d'écart avec C
+      nodes.push(building(`blk${i}-c`, 'Immeuble C', 'building-c', P(0, -3), rot));
+      nodes.push(building(`blk${i}-a`, 'Immeuble A', 'building-a', P(0, 3.3), rot)); // 30 cm d'écart avec C
       break;
     default:
-      nodes.push(node(`blk${i}-tower`, 'Tour D', 'tower-d', P(0, 0), rot, wall));
+      nodes.push(building(`blk${i}-tower`, 'Tour D', 'tower-d', P(0, 0), rot));
       nodes.push(node(`blk${i}-bench`, 'Banc', 'bench', P(0, 5.5), rot));
   }
   // Lampadaires aux quatre coins de l'îlot, sur le trottoir.
@@ -74,6 +81,32 @@ for (const [simId, name, speed, startOffset, tint, pos] of sims) {
   nodes.push({ id: `sim-${simId}`, name, content: { type: 'asset', asset: 'sim-figure', castShadow: true, receiveShadow: false },
     transform: { position: [pos[0], 0, pos[1]] }, components: { Sim: { simId, speed, startOffset, tint } } });
 }
+
+// Logements et lieux de travail : porte = centre de la face avant, point d'attente 2,5 m devant.
+const doorOf = (b) => {
+  const depth = FOOTPRINT[b.asset][1];
+  const rad = (b.rotY * Math.PI) / 180;
+  const fx = Math.sin(rad), fz = Math.cos(rad); // direction de la face avant (+Z local tourné de rotY)
+  const door = { x: b.x + fx * (depth / 2), z: b.z + fz * (depth / 2) };
+  const stand = { x: b.x + fx * (depth / 2 + 2.5), z: b.z + fz * (depth / 2 + 2.5) };
+  return { nodeId: b.id, door, stand };
+};
+const homes = placed.filter((b) => b.asset === 'building-a' || b.asset === 'building-b');
+const works = placed.filter((b) => b.asset === 'tower-d' || b.asset === 'building-c');
+const places = {};
+sims.forEach(([simId], k) => {
+  places[simId] = { home: doorOf(homes[k % homes.length]), work: doorOf(works[k % works.length]) };
+});
+const r = (v) => Math.round(v * 100) / 100;
+const placeTs = (p) => `{ nodeId: '${p.nodeId}', door: { x: ${r(p.door.x)}, z: ${r(p.door.z)} }, stand: { x: ${r(p.stand.x)}, z: ${r(p.stand.z)} } }`;
+fs.writeFileSync('src/city-places.ts',
+  `// GÉNÉRÉ par tools/gen-scene.mjs : ne pas éditer à la main.\n` +
+  `// Logement et lieu de travail de chaque sim : nœud de scène, porte et point d'attente (mètres).\n\n` +
+  `export interface Place { nodeId: string; door: { x: number; z: number }; stand: { x: number; z: number } }\n\n` +
+  `export const SIM_PLACES: Record<string, { home: Place; work: Place }> = {\n` +
+  Object.entries(places).map(([id, p]) => `  ${id}: { home: ${placeTs(p.home)}, work: ${placeTs(p.work)} },`).join('\n') +
+  `\n};\n`);
+console.log('src/city-places.ts généré');
 
 const scene = {
   version: 'iwsdk.scene.v1',

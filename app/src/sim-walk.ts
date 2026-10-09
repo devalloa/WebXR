@@ -1,72 +1,123 @@
-// Déplace chaque sim le long de la boucle de promenade (WALK_LOOP) et l'oriente
-// dans le sens de la marche. Aucune allocation par image : les vecteurs sont
-// créés dans init().
+// Vie quotidienne des sims : selon l'heure de jeu, chacun dort chez lui, va travailler,
+// flâne sur la place, puis rentre. Les trajets suivent les rues (src/sim/streets.ts) ;
+// à l'intérieur d'un bâtiment, le sim est caché. Aucune allocation par image.
 
 import { Color, createSystem, Mesh, MeshStandardMaterial, Vector3, type Entity } from '@iwsdk/core';
-import { WALK_LOOP } from './city-layout.js';
+import type { Signal } from '@preact/signals-core';
+import { scheduleFor, type Place } from '@sim/schedule';
+import { pathLength, pointAlong, routeTo, type Point2, type StreetGrid } from '@sim/streets';
+import { PITCH, WALK_LOOP } from './city-layout.js';
+import { SIM_PLACES } from './city-places.js';
 import { Sim } from './sim-component.js';
 
-/** Longueurs cumulées des segments de la boucle (fermée). */
-const SEGMENTS: { ax: number; az: number; bx: number; bz: number; length: number }[] = WALK_LOOP.map((a, i) => {
-  const b = WALK_LOOP[(i + 1) % WALK_LOOP.length]!;
-  return { ax: a.x, az: a.z, bx: b.x, bz: b.z, length: Math.hypot(b.x - a.x, b.z - a.z) };
-});
-export const LOOP_LENGTH = SEGMENTS.reduce((sum, s) => sum + s.length, 0);
+/** Axes des rues : entre les îlots (±11) et autour de la ville (±33). */
+const GRID: StreetGrid = { xs: [-PITCH * 1.5, -PITCH / 2, PITCH / 2, PITCH * 1.5], zs: [-PITCH * 1.5, -PITCH / 2, PITCH / 2, PITCH * 1.5] };
+/** Boucle de promenade autour de la place, fermée. */
+const LOOP: Point2[] = [...WALK_LOOP, WALK_LOOP[0]!];
+const LOOP_LENGTH = pathLength(LOOP);
+
+interface Journey {
+  place: Place;
+  path: Point2[];
+  length: number;
+  distance: number;
+  arrived: boolean;
+}
 
 export class SimWalkSystem extends createSystem({
   sims: { required: [Sim] },
 }) {
-  private target!: Vector3;
+  private journeys!: Map<Entity, Journey>;
   private lookAt!: Vector3;
   private tint!: Color;
 
   init(): void {
-    this.target = new Vector3();
+    this.journeys = new Map();
     this.lookAt = new Vector3();
     this.tint = new Color();
-
-    const onQualify = (entity: Entity) => this.setup(entity);
-    this.cleanupFuncs.push(this.queries.sims.subscribe('qualify', onQualify));
+    this.cleanupFuncs.push(this.queries.sims.subscribe('qualify', (e) => this.setup(e)));
+    this.cleanupFuncs.push(this.queries.sims.subscribe('disqualify', (e) => this.journeys.delete(e)));
     for (const entity of this.queries.sims.entities) this.setup(entity);
   }
 
-  /** Teinte le corps avec la couleur du composant et place le sim à son offset de départ. */
+  /** Teinte les vêtements avec la couleur du composant ; démarre la journée au lieu prévu. */
   private setup(entity: Entity): void {
     const tint = entity.getVectorView(Sim, 'tint');
     this.tint.setRGB(tint[0]!, tint[1]!, tint[2]!);
     entity.object3D?.traverse((obj) => {
-      if (obj instanceof Mesh && obj.name === 'Body' && obj.material instanceof MeshStandardMaterial) {
+      const isOutfit = obj.name === 'Body' || obj.name === 'Outfit';
+      if (obj instanceof Mesh && isOutfit && obj.material instanceof MeshStandardMaterial) {
         const own = obj.material.clone(); // une copie par sim : le matériau du prototype reste partagé
         own.color.copy(this.tint);
         obj.material = own;
       }
     });
-    entity.setValue(Sim, '_distance', entity.getValue(Sim, 'startOffset') ?? 0);
-    this.place(entity, 0);
+    const hour = (this.globals.gameHour as Signal<number> | undefined)?.peek() ?? 8;
+    const place = scheduleFor(entity.getValue(Sim, 'simId') ?? '', hour).place;
+    const start = this.targetFor(entity, place);
+    this.journeys.set(entity, { place, path: [start, start], length: 0, distance: 0, arrived: true });
+    this.applyPose(entity, start.x, start.z, 0, 1);
+  }
+
+  private targetFor(entity: Entity, place: Place): Point2 {
+    if (place === 'plaza') {
+      const offset = (entity.getValue(Sim, 'startOffset') ?? 0) % LOOP_LENGTH;
+      const p = pointAlong(LOOP, offset);
+      return { x: p.x, z: p.z };
+    }
+    const simId = entity.getValue(Sim, 'simId') ?? '';
+    const places = SIM_PLACES[simId];
+    const stand = place === 'home' ? places?.home.stand : places?.work.stand;
+    return stand ?? { x: 0, z: 0 };
   }
 
   update(delta: number): void {
-    for (const entity of this.queries.sims.entities) this.place(entity, delta);
+    const hour = (this.globals.gameHour as Signal<number> | undefined)?.peek() ?? 8;
+    for (const entity of this.queries.sims.entities) {
+      const journey = this.journeys.get(entity);
+      if (journey == null) continue;
+      const speed = entity.getValue(Sim, 'speed') ?? 1.2;
+      const place = scheduleFor(entity.getValue(Sim, 'simId') ?? '', hour).place;
+
+      if (place !== journey.place) {
+        // Nouveau créneau : itinéraire par les rues depuis la position courante.
+        const here = pointAlong(journey.path, journey.distance);
+        journey.place = place;
+        journey.path = routeTo({ x: here.x, z: here.z }, this.targetFor(entity, place), GRID);
+        journey.length = pathLength(journey.path);
+        journey.distance = 0;
+        journey.arrived = false;
+        if (entity.object3D) entity.object3D.visible = true;
+      }
+
+      if (!journey.arrived) {
+        journey.distance = Math.min(journey.length, journey.distance + speed * delta);
+        const p = pointAlong(journey.path, journey.distance);
+        this.applyPose(entity, p.x, p.z, p.dx, p.dz);
+        if (journey.distance >= journey.length) {
+          journey.arrived = true;
+          // Chez soi ou au travail : le sim entre dans le bâtiment (caché jusqu'au prochain créneau).
+          if (place !== 'plaza' && entity.object3D) entity.object3D.visible = false;
+        }
+      } else if (place === 'plaza') {
+        // Flânerie : tour de la place en boucle.
+        entity.setValue(Sim, '_distance', ((entity.getValue(Sim, '_distance') ?? 0) + speed * delta) % LOOP_LENGTH);
+        const p = pointAlong(LOOP, entity.getValue(Sim, '_distance') ?? 0);
+        journey.path = [{ x: p.x, z: p.z }, { x: p.x, z: p.z }];
+        journey.length = 0;
+        journey.distance = 0;
+        this.applyPose(entity, p.x, p.z, p.dx, p.dz);
+      }
+    }
   }
 
-  private place(entity: Entity, delta: number): void {
+  private applyPose(entity: Entity, x: number, z: number, dx: number, dz: number): void {
     const obj = entity.object3D;
     if (obj == null) return;
-    const speed = entity.getValue(Sim, 'speed') ?? 0;
-    let distance = ((entity.getValue(Sim, '_distance') ?? 0) + speed * delta) % LOOP_LENGTH;
-    entity.setValue(Sim, '_distance', distance);
-
-    // Trouve le segment courant et interpole la position.
-    let seg = SEGMENTS[0]!;
-    for (const s of SEGMENTS) {
-      if (distance <= s.length) { seg = s; break; }
-      distance -= s.length;
+    obj.position.set(x, 0.15, z);
+    if (dx !== 0 || dz !== 0) {
+      this.lookAt.set(x + dx, 0.15, z + dz);
+      obj.lookAt(this.lookAt); // la figure regarde vers -Z local
     }
-    const t = seg.length > 0 ? distance / seg.length : 0;
-    this.target.set(seg.ax + (seg.bx - seg.ax) * t, 0, seg.az + (seg.bz - seg.az) * t);
-    obj.position.copy(this.target);
-    // Regarde vers la fin du segment (la figure fait face à -Z local).
-    this.lookAt.set(seg.bx, 0, seg.bz);
-    if (this.lookAt.distanceToSquared(this.target) > 1e-6) obj.lookAt(this.lookAt);
   }
 }

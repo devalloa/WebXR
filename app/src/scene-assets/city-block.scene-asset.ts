@@ -2,7 +2,7 @@
 // lus tels quels par la locomotion). Les bâtiments viennent du kit Blender (GLB).
 // Module évalué par le runtime ET l'éditeur : déterministe, sans World ni DOM.
 
-import { BoxGeometry, Group, Mesh, MeshStandardMaterial, Object3D, PlaneGeometry } from '@iwsdk/core';
+import { BoxGeometry, BufferAttribute, BufferGeometry, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, PlaneGeometry } from '@iwsdk/core';
 import { BLOCK_CENTERS, BLOCK_SIZE, PITCH, SIDEWALK_HEIGHT } from '../city-layout.js';
 
 const CITY_EXTENT = PITCH * 3 + 12; // 78 m de côté, marge comprise
@@ -37,6 +37,44 @@ export function createCityBlock(): Object3D {
     root.add(m);
   }
 
+  // Marquages au sol : pointillés d'axe sur chaque rue et passages piétons autour de la place,
+  // en une seule géométrie (un draw call), posés 1 cm au-dessus de la chaussée.
+  const paint = new MeshBasicMaterial({ color: 0xe8e8e0 });
+  const marks = new Mesh(buildRoadMarkings(), paint);
+  marks.name = 'RoadMarkings';
+  root.add(marks);
+
   // Bâtiments, lampadaires et mobilier : GLB du kit Blender placés par la scène JSON.
   return root;
+}
+
+/** Quads plats (deux triangles) empilés dans une BufferGeometry : pas de merge utilitaire nécessaire. */
+function buildRoadMarkings(): BufferGeometry {
+  const verts: number[] = [];
+  const y = 0.01;
+  const quad = (x0: number, z0: number, x1: number, z1: number) => {
+    verts.push(x0, y, z0, x1, y, z0, x1, y, z1, x0, y, z0, x1, y, z1, x0, y, z1);
+  };
+  const half = (PITCH * 3 + 12) / 2;
+  const axes = [-PITCH * 1.5, -PITCH / 2, PITCH / 2, PITCH * 1.5];
+  // Pointillés d'axe : 2 m peints, 2 m vides, largeur 0,15 m.
+  for (const a of axes) {
+    for (let s = -half + 1; s < half - 1; s += 4) {
+      quad(a - 0.075, s, a + 0.075, s + 2); // rue verticale (x = a)
+      quad(s, a - 0.075, s + 2, a + 0.075); // rue horizontale (z = a)
+    }
+  }
+  // Passages piétons : bandes de 0,5 m, aux quatre entrées de la place (milieu de chaque côté).
+  const edge = BLOCK_SIZE / 2 + 0.3; // juste au bord du trottoir de la place
+  for (let i = -2; i <= 2; i++) {
+    const c = i * 1.0;
+    quad(c - 0.25, edge, c + 0.25, edge + 3); // sud
+    quad(c - 0.25, -edge - 3, c + 0.25, -edge); // nord
+    quad(edge, c - 0.25, edge + 3, c + 0.25); // est
+    quad(-edge - 3, c - 0.25, -edge, c + 0.25); // ouest
+  }
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new BufferAttribute(new Float32Array(verts), 3));
+  geometry.computeVertexNormals();
+  return geometry;
 }

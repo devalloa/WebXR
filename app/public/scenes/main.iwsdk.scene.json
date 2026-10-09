@@ -113,27 +113,6 @@
       }
     },
     {
-      "id": "fill",
-      "name": "Lumière d'ambiance",
-      "components": {
-        "com.iwsdk.components.HemisphereLight": {
-          "skyColor": [
-            0.7,
-            0.8,
-            1,
-            1
-          ],
-          "groundColor": [
-            0.35,
-            0.3,
-            0.25,
-            1
-          ],
-          "intensity": 0.6
-        }
-      }
-    },
-    {
       "id": "blk0-a1",
       "name": "Immeuble A",
       "content": {

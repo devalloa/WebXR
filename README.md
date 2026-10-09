@@ -47,8 +47,9 @@ npm run dev                            # serveur de dev + navigateur piloté (é
 - `app/src/scene-assets/` : sol de la ville (`city-ground`) et silhouette de sim (`sim-figure`) ; les bâtiments viennent du kit Blender (`app/public/gltf/city-kit/`, généré par `tools/blender/city_kit.py`).
 - `app/tools/gen-scene.mjs` : génère la scène JSON (placement des immeubles, lampadaires, mobilier, sims) ; relancer après tout changement de plan.
 - `app/src/city-layout.ts` : plan de la ville (données pures, boucle de promenade `WALK_LOOP`).
-- `app/src/sim-walk.ts` : `SimWalkSystem`, déplace et oriente les six sims (composant `Sim`).
-- `app/src/game-clock.ts` : `GameClockSystem`, heure de jeu (`globals.gameHour`), soleil, ciel, et `tick()` des relations.
+- `app/src/sim-walk.ts` : `SimWalkSystem`, vie quotidienne des six sims : routine horaire (`src/sim/schedule.ts`), trajets par les rues (`src/sim/streets.ts`), logement et lieu de travail (`app/src/city-places.ts`, généré), flânerie sur la place.
+- `app/src/game-clock.ts` : `GameClockSystem`, heure de jeu (`globals.gameHour`), soleil avec ombre portée, lumière d'ambiance, ciel et émissifs jour/nuit, `tick()` des relations.
+- Paramètres d'URL pour tester : `?hour=22` (heure de départ), `?speed=6` (heures de jeu par minute réelle). Dans le navigateur de test : W/A/S/D ou flèches pour marcher, Espace pour sauter.
 - `app/public/scenes/main.iwsdk.scene.json` : composition (ville, lumière, six sims avec `simId`, `speed`, `tint`).
 - L'alias `@sim/*` pointe vers `src/sim/` (logique pure partagée avec les tests Vitest).
 
