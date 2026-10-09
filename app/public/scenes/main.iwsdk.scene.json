@@ -3,61 +3,1543 @@
   "units": "meters",
   "components": {
     "com.iwsdk.components.DomeGradient": {
-      "sky": [0.24, 0.62, 0.83, 1],
-      "equator": [0.66, 0.71, 0.79, 1],
-      "ground": [0.8, 0.78, 0.75, 1],
+      "sky": [
+        0.24,
+        0.62,
+        0.83,
+        1
+      ],
+      "equator": [
+        0.66,
+        0.71,
+        0.79,
+        1
+      ],
+      "ground": [
+        0.8,
+        0.78,
+        0.75,
+        1
+      ],
       "intensity": 1
     },
     "com.iwsdk.components.IBLGradient": {
-      "sky": [0.69, 0.75, 0.78, 1],
-      "equator": [0.66, 0.71, 0.79, 1],
-      "ground": [0.8, 0.78, 0.75, 1],
+      "sky": [
+        0.69,
+        0.75,
+        0.78,
+        1
+      ],
+      "equator": [
+        0.66,
+        0.71,
+        0.79,
+        1
+      ],
+      "ground": [
+        0.8,
+        0.78,
+        0.75,
+        1
+      ],
       "intensity": 1
     }
   },
   "resources": {},
+  "player": {
+    "transform": {
+      "position": [
+        0,
+        0.15,
+        0
+      ]
+    }
+  },
   "authoring": {
     "views": [
       {
-        "id": "hero", "role": "hero", "projection": "perspective",
-        "position": [18, 14, 26], "target": [0, 2, -4], "fov": 50
+        "id": "hero",
+        "role": "hero",
+        "projection": "perspective",
+        "position": [
+          44,
+          30,
+          52
+        ],
+        "target": [
+          0,
+          6,
+          0
+        ],
+        "fov": 45
       },
       {
-        "id": "street", "role": "diagnostic", "projection": "perspective",
-        "position": [0, 1.6, 2], "target": [-11, 1.4, -11], "fov": 70
+        "id": "street",
+        "role": "diagnostic",
+        "projection": "perspective",
+        "position": [
+          0,
+          1.75,
+          2
+        ],
+        "target": [
+          -11,
+          1.5,
+          -11
+        ],
+        "fov": 70
       }
     ]
   },
   "nodes": [
     {
-      "id": "city", "name": "Ville",
-      "content": { "type": "asset", "asset": "city-block" },
-      "transform": { "position": [0, 0, 0] },
-      "components": { "LocomotionEnvironment": {} }
+      "id": "ground",
+      "name": "Sol",
+      "content": {
+        "type": "asset",
+        "asset": "city-ground"
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
     },
     {
-      "id": "fill", "name": "Lumière d'ambiance",
-      "components": { "com.iwsdk.components.HemisphereLight": {
-        "skyColor": [0.7, 0.8, 1, 1], "groundColor": [0.35, 0.3, 0.25, 1], "intensity": 0.6
-      } }
+      "id": "fill",
+      "name": "Lumière d'ambiance",
+      "components": {
+        "com.iwsdk.components.HemisphereLight": {
+          "skyColor": [
+            0.7,
+            0.8,
+            1,
+            1
+          ],
+          "groundColor": [
+            0.35,
+            0.3,
+            0.25,
+            1
+          ],
+          "intensity": 0.6
+        }
+      }
     },
-    { "id": "sim-lea", "name": "Léa", "content": { "type": "asset", "asset": "sim-figure" },
-      "transform": { "position": [-11, 0.15, -11] },
-      "components": { "Sim": { "simId": "lea", "speed": 1.2, "startOffset": 0, "tint": [0.85, 0.3, 0.3, 1] } } },
-    { "id": "sim-noah", "name": "Noah", "content": { "type": "asset", "asset": "sim-figure" },
-      "transform": { "position": [0, 0.15, -11] },
-      "components": { "Sim": { "simId": "noah", "speed": 1.4, "startOffset": 15, "tint": [0.3, 0.45, 0.85, 1] } } },
-    { "id": "sim-ines", "name": "Inès", "content": { "type": "asset", "asset": "sim-figure" },
-      "transform": { "position": [11, 0.15, -11] },
-      "components": { "Sim": { "simId": "ines", "speed": 1.1, "startOffset": 30, "tint": [0.9, 0.75, 0.25, 1] } } },
-    { "id": "sim-malik", "name": "Malik", "content": { "type": "asset", "asset": "sim-figure" },
-      "transform": { "position": [11, 0.15, 0] },
-      "components": { "Sim": { "simId": "malik", "speed": 1.3, "startOffset": 45, "tint": [0.3, 0.7, 0.4, 1] } } },
-    { "id": "sim-sofia", "name": "Sofia", "content": { "type": "asset", "asset": "sim-figure" },
-      "transform": { "position": [11, 0.15, 11] },
-      "components": { "Sim": { "simId": "sofia", "speed": 1.0, "startOffset": 60, "tint": [0.75, 0.4, 0.8, 1] } } },
-    { "id": "sim-theo", "name": "Théo", "content": { "type": "asset", "asset": "sim-figure" },
-      "transform": { "position": [0, 0.15, 11] },
-      "components": { "Sim": { "simId": "theo", "speed": 1.5, "startOffset": 75, "tint": [0.95, 0.55, 0.2, 1] } } }
+    {
+      "id": "blk0-a1",
+      "name": "Immeuble A",
+      "content": {
+        "type": "asset",
+        "asset": "building-a"
+      },
+      "transform": {
+        "position": [
+          -25,
+          0.15,
+          -25
+        ],
+        "rotationDeg": [
+          0,
+          90,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk0-a2",
+      "name": "Immeuble A",
+      "content": {
+        "type": "asset",
+        "asset": "building-a"
+      },
+      "transform": {
+        "position": [
+          -19,
+          0.15,
+          -19
+        ],
+        "rotationDeg": [
+          0,
+          90,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk0-tree",
+      "name": "Arbre",
+      "content": {
+        "type": "asset",
+        "asset": "tree"
+      },
+      "transform": {
+        "position": [
+          -19,
+          0.15,
+          -25
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk0-lampWN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -29.4,
+          0.15,
+          -29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk0-lampEN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -14.6,
+          0.15,
+          -29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk0-lampES",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -14.6,
+          0.15,
+          -14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk0-lampWS",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -29.4,
+          0.15,
+          -14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk1-b",
+      "name": "Immeuble B",
+      "content": {
+        "type": "asset",
+        "asset": "building-b"
+      },
+      "transform": {
+        "position": [
+          -25,
+          0.15,
+          0
+        ],
+        "rotationDeg": [
+          0,
+          90,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk1-a",
+      "name": "Immeuble A",
+      "content": {
+        "type": "asset",
+        "asset": "building-a"
+      },
+      "transform": {
+        "position": [
+          -19,
+          0.15,
+          2
+        ],
+        "rotationDeg": [
+          0,
+          90,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk1-tree",
+      "name": "Arbre",
+      "content": {
+        "type": "asset",
+        "asset": "tree"
+      },
+      "transform": {
+        "position": [
+          -19,
+          0.15,
+          -3.5
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk1-lampWN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -29.4,
+          0.15,
+          -7.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk1-lampEN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -14.6,
+          0.15,
+          -7.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk1-lampES",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -14.6,
+          0.15,
+          7.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk1-lampWS",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -29.4,
+          0.15,
+          7.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk2-c",
+      "name": "Immeuble C",
+      "content": {
+        "type": "asset",
+        "asset": "building-c"
+      },
+      "transform": {
+        "position": [
+          -22,
+          0.15,
+          19
+        ],
+        "rotationDeg": [
+          0,
+          180,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk2-a",
+      "name": "Immeuble A",
+      "content": {
+        "type": "asset",
+        "asset": "building-a"
+      },
+      "transform": {
+        "position": [
+          -22,
+          0.15,
+          25
+        ],
+        "rotationDeg": [
+          0,
+          180,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk2-lampWN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -29.4,
+          0.15,
+          14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk2-lampEN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -14.6,
+          0.15,
+          14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk2-lampES",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -14.6,
+          0.15,
+          29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk2-lampWS",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -29.4,
+          0.15,
+          29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk3-tower",
+      "name": "Tour D",
+      "content": {
+        "type": "asset",
+        "asset": "tower-d"
+      },
+      "transform": {
+        "position": [
+          0,
+          0.15,
+          -22
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk3-bench",
+      "name": "Banc",
+      "content": {
+        "type": "asset",
+        "asset": "bench"
+      },
+      "transform": {
+        "position": [
+          0,
+          0.15,
+          -16.5
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk3-lampWN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -7.4,
+          0.15,
+          -29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk3-lampEN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          7.4,
+          0.15,
+          -29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk3-lampES",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          7.4,
+          0.15,
+          -14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk3-lampWS",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -7.4,
+          0.15,
+          -14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk4-a1",
+      "name": "Immeuble A",
+      "content": {
+        "type": "asset",
+        "asset": "building-a"
+      },
+      "transform": {
+        "position": [
+          -3,
+          0.15,
+          19
+        ],
+        "rotationDeg": [
+          0,
+          -180,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk4-a2",
+      "name": "Immeuble A",
+      "content": {
+        "type": "asset",
+        "asset": "building-a"
+      },
+      "transform": {
+        "position": [
+          3,
+          0.15,
+          25
+        ],
+        "rotationDeg": [
+          0,
+          -180,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk4-tree",
+      "name": "Arbre",
+      "content": {
+        "type": "asset",
+        "asset": "tree"
+      },
+      "transform": {
+        "position": [
+          3,
+          0.15,
+          19
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk4-lampWN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -7.4,
+          0.15,
+          14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk4-lampEN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          7.4,
+          0.15,
+          14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk4-lampES",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          7.4,
+          0.15,
+          29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk4-lampWS",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          -7.4,
+          0.15,
+          29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk5-b",
+      "name": "Immeuble B",
+      "content": {
+        "type": "asset",
+        "asset": "building-b"
+      },
+      "transform": {
+        "position": [
+          19,
+          0.15,
+          -22
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk5-a",
+      "name": "Immeuble A",
+      "content": {
+        "type": "asset",
+        "asset": "building-a"
+      },
+      "transform": {
+        "position": [
+          25,
+          0.15,
+          -20
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk5-tree",
+      "name": "Arbre",
+      "content": {
+        "type": "asset",
+        "asset": "tree"
+      },
+      "transform": {
+        "position": [
+          25,
+          0.15,
+          -25.5
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk5-lampWN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          14.6,
+          0.15,
+          -29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk5-lampEN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          29.4,
+          0.15,
+          -29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk5-lampES",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          29.4,
+          0.15,
+          -14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk5-lampWS",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          14.6,
+          0.15,
+          -14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk6-c",
+      "name": "Immeuble C",
+      "content": {
+        "type": "asset",
+        "asset": "building-c"
+      },
+      "transform": {
+        "position": [
+          22,
+          0.15,
+          -3
+        ],
+        "rotationDeg": [
+          0,
+          -90,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk6-a",
+      "name": "Immeuble A",
+      "content": {
+        "type": "asset",
+        "asset": "building-a"
+      },
+      "transform": {
+        "position": [
+          22,
+          0.15,
+          3
+        ],
+        "rotationDeg": [
+          0,
+          -90,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk6-lampWN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          14.6,
+          0.15,
+          -7.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk6-lampEN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          29.4,
+          0.15,
+          -7.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk6-lampES",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          29.4,
+          0.15,
+          7.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk6-lampWS",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          14.6,
+          0.15,
+          7.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk7-tower",
+      "name": "Tour D",
+      "content": {
+        "type": "asset",
+        "asset": "tower-d"
+      },
+      "transform": {
+        "position": [
+          22,
+          0.15,
+          22
+        ],
+        "rotationDeg": [
+          0,
+          -90,
+          0
+        ]
+      },
+      "components": {
+        "LocomotionEnvironment": {}
+      }
+    },
+    {
+      "id": "blk7-bench",
+      "name": "Banc",
+      "content": {
+        "type": "asset",
+        "asset": "bench"
+      },
+      "transform": {
+        "position": [
+          22,
+          0.15,
+          27.5
+        ],
+        "rotationDeg": [
+          0,
+          -90,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk7-lampWN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          14.6,
+          0.15,
+          14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk7-lampEN",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          29.4,
+          0.15,
+          14.6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk7-lampES",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          29.4,
+          0.15,
+          29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "blk7-lampWS",
+      "name": "Lampadaire",
+      "content": {
+        "type": "asset",
+        "asset": "lamppost"
+      },
+      "transform": {
+        "position": [
+          14.6,
+          0.15,
+          29.4
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "plaza-tree--5--5",
+      "name": "Arbre",
+      "content": {
+        "type": "asset",
+        "asset": "tree"
+      },
+      "transform": {
+        "position": [
+          -5,
+          0.15,
+          -5
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "plaza-tree-5--5",
+      "name": "Arbre",
+      "content": {
+        "type": "asset",
+        "asset": "tree"
+      },
+      "transform": {
+        "position": [
+          5,
+          0.15,
+          -5
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "plaza-tree-5-5",
+      "name": "Arbre",
+      "content": {
+        "type": "asset",
+        "asset": "tree"
+      },
+      "transform": {
+        "position": [
+          5,
+          0.15,
+          5
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "plaza-tree--5-5",
+      "name": "Arbre",
+      "content": {
+        "type": "asset",
+        "asset": "tree"
+      },
+      "transform": {
+        "position": [
+          -5,
+          0.15,
+          5
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "plaza-bench-0",
+      "name": "Banc",
+      "content": {
+        "type": "asset",
+        "asset": "bench"
+      },
+      "transform": {
+        "position": [
+          0,
+          0.15,
+          -6
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "plaza-bench-90",
+      "name": "Banc",
+      "content": {
+        "type": "asset",
+        "asset": "bench"
+      },
+      "transform": {
+        "position": [
+          6,
+          0.15,
+          0
+        ],
+        "rotationDeg": [
+          0,
+          90,
+          0
+        ]
+      }
+    },
+    {
+      "id": "plaza-bench-180",
+      "name": "Banc",
+      "content": {
+        "type": "asset",
+        "asset": "bench"
+      },
+      "transform": {
+        "position": [
+          0,
+          0.15,
+          6
+        ],
+        "rotationDeg": [
+          0,
+          180,
+          0
+        ]
+      }
+    },
+    {
+      "id": "plaza-bench-270",
+      "name": "Banc",
+      "content": {
+        "type": "asset",
+        "asset": "bench"
+      },
+      "transform": {
+        "position": [
+          -6,
+          0.15,
+          0
+        ],
+        "rotationDeg": [
+          0,
+          270,
+          0
+        ]
+      }
+    },
+    {
+      "id": "sim-lea",
+      "name": "Léa",
+      "content": {
+        "type": "asset",
+        "asset": "sim-figure"
+      },
+      "transform": {
+        "position": [
+          -11,
+          0,
+          -11
+        ]
+      },
+      "components": {
+        "Sim": {
+          "simId": "lea",
+          "speed": 1.2,
+          "startOffset": 0,
+          "tint": [
+            0.85,
+            0.3,
+            0.3,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "sim-noah",
+      "name": "Noah",
+      "content": {
+        "type": "asset",
+        "asset": "sim-figure"
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          -11
+        ]
+      },
+      "components": {
+        "Sim": {
+          "simId": "noah",
+          "speed": 1.4,
+          "startOffset": 15,
+          "tint": [
+            0.3,
+            0.45,
+            0.85,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "sim-ines",
+      "name": "Inès",
+      "content": {
+        "type": "asset",
+        "asset": "sim-figure"
+      },
+      "transform": {
+        "position": [
+          11,
+          0,
+          -11
+        ]
+      },
+      "components": {
+        "Sim": {
+          "simId": "ines",
+          "speed": 1.1,
+          "startOffset": 30,
+          "tint": [
+            0.9,
+            0.75,
+            0.25,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "sim-malik",
+      "name": "Malik",
+      "content": {
+        "type": "asset",
+        "asset": "sim-figure"
+      },
+      "transform": {
+        "position": [
+          11,
+          0,
+          0
+        ]
+      },
+      "components": {
+        "Sim": {
+          "simId": "malik",
+          "speed": 1.3,
+          "startOffset": 45,
+          "tint": [
+            0.3,
+            0.7,
+            0.4,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "sim-sofia",
+      "name": "Sofia",
+      "content": {
+        "type": "asset",
+        "asset": "sim-figure"
+      },
+      "transform": {
+        "position": [
+          11,
+          0,
+          11
+        ]
+      },
+      "components": {
+        "Sim": {
+          "simId": "sofia",
+          "speed": 1,
+          "startOffset": 60,
+          "tint": [
+            0.75,
+            0.4,
+            0.8,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "sim-theo",
+      "name": "Théo",
+      "content": {
+        "type": "asset",
+        "asset": "sim-figure"
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          11
+        ]
+      },
+      "components": {
+        "Sim": {
+          "simId": "theo",
+          "speed": 1.5,
+          "startOffset": 75,
+          "tint": [
+            0.95,
+            0.55,
+            0.2,
+            1
+          ]
+        }
+      }
+    }
   ]
 }

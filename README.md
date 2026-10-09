@@ -44,7 +44,8 @@ npm run typecheck && npm run build     # vérifications
 npm run dev                            # serveur de dev + navigateur piloté (émulateur Quest 3)
 ```
 
-- `app/src/scene-assets/` : ville procédurale (`city-block`) et silhouette de sim (`sim-figure`), InstancedMesh et matériaux partagés.
+- `app/src/scene-assets/` : sol de la ville (`city-ground`) et silhouette de sim (`sim-figure`) ; les bâtiments viennent du kit Blender (`app/public/gltf/city-kit/`, généré par `tools/blender/city_kit.py`).
+- `app/tools/gen-scene.mjs` : génère la scène JSON (placement des immeubles, lampadaires, mobilier, sims) ; relancer après tout changement de plan.
 - `app/src/city-layout.ts` : plan de la ville (données pures, boucle de promenade `WALK_LOOP`).
 - `app/src/sim-walk.ts` : `SimWalkSystem`, déplace et oriente les six sims (composant `Sim`).
 - `app/src/game-clock.ts` : `GameClockSystem`, heure de jeu (`globals.gameHour`), soleil, ciel, et `tick()` des relations.
