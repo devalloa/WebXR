@@ -17,22 +17,11 @@
         "/home/user/WebXR/app/node_modules/@iwsdk/reference/dist/cli.js"
       ],
       "enabled": true
-    },
-    "metavr": {
-      "type": "local",
-      "command": [
-        "node",
-        "/home/user/WebXR/app/node_modules/@meta-quest/metavr/bin.js",
-        "mcp",
-        "server"
-      ],
-      "enabled": true
     }
   },
   "permission": {
     "iwsdk-runtime_*": "allow",
     "iwsdk-reference_*": "allow",
-    "metavr_*": "allow",
     "skill": {
       "iwsdk-*": "allow"
     }
