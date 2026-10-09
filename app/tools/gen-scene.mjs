@@ -10,7 +10,7 @@ const OUT = 'public/scenes/main.iwsdk.scene.json';
 
 const node = (id, name, asset, [x, z], rotY = 0, extra = {}) => ({
   id, name,
-  content: { type: 'asset', asset },
+  content: { type: 'asset', asset, castShadow: true, receiveShadow: true },
   transform: { position: [x, SIDEWALK, z], rotationDeg: [0, rotY, 0] },
   ...extra,
 });
@@ -18,7 +18,7 @@ const node = (id, name, asset, [x, z], rotY = 0, extra = {}) => ({
 const faceCenter = (x, z) => (Math.atan2(-x, -z) * 180) / Math.PI;
 
 const nodes = [
-  { id: 'ground', name: 'Sol', content: { type: 'asset', asset: 'city-ground' },
+  { id: 'ground', name: 'Sol', content: { type: 'asset', asset: 'city-ground', castShadow: false, receiveShadow: true },
     transform: { position: [0, 0, 0] }, components: { LocomotionEnvironment: {} } },
   { id: 'fill', name: "Lumière d'ambiance", components: { 'com.iwsdk.components.HemisphereLight': {
     skyColor: [0.7, 0.8, 1, 1], groundColor: [0.35, 0.3, 0.25, 1], intensity: 0.6 } } },
@@ -71,7 +71,7 @@ const sims = [
   ['theo', 'Théo', 1.5, 75, [0.95, 0.55, 0.2, 1], [0, 11]],
 ];
 for (const [simId, name, speed, startOffset, tint, pos] of sims) {
-  nodes.push({ id: `sim-${simId}`, name, content: { type: 'asset', asset: 'sim-figure' },
+  nodes.push({ id: `sim-${simId}`, name, content: { type: 'asset', asset: 'sim-figure', castShadow: true, receiveShadow: false },
     transform: { position: [pos[0], 0, pos[1]] }, components: { Sim: { simId, speed, startOffset, tint } } });
 }
 
