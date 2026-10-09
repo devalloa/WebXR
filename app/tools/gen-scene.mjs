@@ -39,12 +39,12 @@ blocks.forEach((b, i) => {
       break;
     case 1:
       nodes.push(node(`blk${i}-b`, 'Immeuble B', 'building-b', P(-3, 0), rot, wall));
-      nodes.push(node(`blk${i}-a`, 'Immeuble A', 'building-a', P(3, 2), rot, wall));
+      nodes.push(node(`blk${i}-a`, 'Immeuble A', 'building-a', P(3.3, 2), rot, wall)); // 30 cm d'écart avec B : pas de z-fighting
       nodes.push(node(`blk${i}-tree`, 'Arbre', 'tree', P(3, -3.5)));
       break;
     case 2:
       nodes.push(node(`blk${i}-c`, 'Immeuble C', 'building-c', P(0, -3), rot, wall));
-      nodes.push(node(`blk${i}-a`, 'Immeuble A', 'building-a', P(0, 3), rot, wall));
+      nodes.push(node(`blk${i}-a`, 'Immeuble A', 'building-a', P(0, 3.3), rot, wall)); // 30 cm d'écart avec C
       break;
     default:
       nodes.push(node(`blk${i}-tower`, 'Tour D', 'tower-d', P(0, 0), rot, wall));
