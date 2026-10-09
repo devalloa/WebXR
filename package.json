@@ -4,9 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "agent:session": "node --env-file=.env scripts/agents/run-session.mjs"
+    "test": "vitest run src",
+    "typecheck": "tsc --noEmit",
+    "agent:session": "node --env-file-if-exists=.env scripts/agents/run-session.mjs"
   },
   "devDependencies": {
-    "@anthropic-ai/sdk": "^0.132.1"
+    "@anthropic-ai/sdk": "^0.132.1",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
   }
 }
