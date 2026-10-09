@@ -18,9 +18,10 @@ import Anthropic from "@anthropic-ai/sdk";
 // Configuration
 // ---------------------------------------------------------------------------
 
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.error("ANTHROPIC_API_KEY absente : copiez .env.example en .env et renseignez la clé.");
-  process.exit(1);
+// Authentification : ANTHROPIC_API_KEY (via .env), sinon le profil OAuth créé par
+// `ant auth login` (lu automatiquement par le SDK, jeton court stocké hors du dépôt).
+if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) {
+  console.log("Pas de ANTHROPIC_API_KEY : utilisation du profil `ant auth login` s'il existe.\n");
 }
 
 const AGENT_FILE = "agents/webxr-game-systems.md";
